@@ -1,13 +1,14 @@
 ﻿import pandas as pd
 from sklearn.model_selection import train_test_split
 
+# Import Mage's decorators only if they aren't already loaded.
+# Outside Mage (pytest, CI), mage_ai isn't installed, so fall back to no-op decorators.
 try:
     if 'transformer' not in globals():
         from mage_ai.data_preparation.decorators import transformer
     if 'test' not in globals():
         from mage_ai.data_preparation.decorators import test
 except ImportError:
-    # Running outside Mage (e.g. in pytest): use no-op decorators
     def transformer(func):
         return func
 
@@ -16,17 +17,19 @@ except ImportError:
 
 
 @transformer
-def transform(df: pd.DataFrame, *args, **kwargs) -> pd.DataFrame:
-    train_idx, test_idx = train_test_split(
-        df.index, test_size=0.2, random_state=42, stratify=df["target"]
-    )
-    df = df.copy()
-    df["split"] = "train"
-    df.loc[test_idx, "split"] = "test"
-    return df
+def transform(df, *args, **kwargs):
+    train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+
+    train_df = train_df.copy()
+    test_df = test_df.copy()
+    train_df['split'] = 'train'
+    test_df['split'] = 'test'
+
+    result = pd.concat([train_df, test_df])
+    print('Train rows:', len(train_df), '| Test rows:', len(test_df))
+    return result
 
 
 @test
-def test_output(output, *args) -> None:
-    assert output is not None, 'The output is undefined'
-    assert "split" in output.columns
+def test_output(output, *args):
+    assert 'split' in output.columns, 'split column missing'

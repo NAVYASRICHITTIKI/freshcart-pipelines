@@ -4,3 +4,11 @@
 mage.log
 __pycache__/
 .venv/
+.mage_data/
+.logs/
+tunnel.log
+cloudflared
+.mage_data/
+.logs/
+tunnel.log
+cloudflared
