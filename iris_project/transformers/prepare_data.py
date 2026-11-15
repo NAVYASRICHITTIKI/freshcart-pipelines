@@ -18,7 +18,7 @@ except ImportError:
 @transformer
 def transform(df: pd.DataFrame, *args, **kwargs) -> pd.DataFrame:
     train_idx, test_idx = train_test_split(
-        df.index, test_size=0.2, random_state=42, stratify=df["target"]
+        df.index, test_size=0.3, random_state=42, stratify=df["target"]
     )
     df = df.copy()
     df["split"] = "train"
