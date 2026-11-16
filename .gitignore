@@ -12,3 +12,4 @@ cloudflared
 .logs/
 tunnel.log
 cloudflared
+*.log
